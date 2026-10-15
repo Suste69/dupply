@@ -13,21 +13,17 @@ pub fn calculate_stats(
     analyzed: usize,
     duplicates: &[DuplicateGroup],
 ) -> ScanStats {
-    let copies: usize = duplicates
-        .iter()
-        .map(|group| group.files.len() - 1)
-        .sum();
+    let copies: usize = duplicates.iter().map(|group| group.files.len() - 1).sum();
     let bites: u64 = duplicates
         .iter()
-        .map(|group| (group.files.len() as u64 -1)* group.size)
+        .map(|group| (group.files.len() as u64 - 1) * group.size)
         .sum();
-    let stats= ScanStats { 
-        scanned, 
-        analyzed, 
-        duplicate_groups: (duplicates.len()), 
-        duplicate_copies: (copies), 
-        reclaimable_bytes: (bites)
-
+    let stats = ScanStats {
+        scanned,
+        analyzed,
+        duplicate_groups: (duplicates.len()),
+        duplicate_copies: (copies),
+        reclaimable_bytes: (bites),
     };
     stats
 }
@@ -53,10 +49,7 @@ mod tests {
             DuplicateGroup {
                 hash: [2u8; 32],
                 size: 500,
-                files: vec![
-                    PathBuf::from("d.txt"),
-                    PathBuf::from("e.txt"),
-                ],
+                files: vec![PathBuf::from("d.txt"), PathBuf::from("e.txt")],
             },
         ];
         let stats = calculate_stats(10, 8, &duplicates);

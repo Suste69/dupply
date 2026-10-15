@@ -2,25 +2,23 @@
 mod cli;
 
 // Import delle funzioni dalla libreria Dupply
-use dupply::scanner::scan_directory;
 use dupply::duplicates::find_duplicates;
 use dupply::report::calculate_stats;
+use dupply::scanner::scan_directory;
 
 // Import per la CLI
 use clap::Parser;
 use cli::{Cli, Commands};
 
-
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
-        match cli.command {
+    match cli.command {
         Commands::Scan { path, min_size } => {
             println!("Scanning: {:?} ", path);
             let mut files = scan_directory(&path)?;
             files.retain(|file| file.size >= min_size);
 
             let duplicates = find_duplicates(files)?;
-
 
             for group in duplicates {
                 println!("Dimensione: {} byte", group.size);
@@ -47,7 +45,7 @@ fn main() -> anyhow::Result<()> {
             let duplicates = find_duplicates(files)?;
 
             // Qui chiamerai calculate_stats()
-            let stats  = calculate_stats(scanned, analyzed, &duplicates);
+            let stats = calculate_stats(scanned, analyzed, &duplicates);
             let reclaimable_mb = stats.reclaimable_bytes as f64 / 1_048_576.0;
             // e stamperai il report
             println!(
@@ -66,9 +64,6 @@ fn main() -> anyhow::Result<()> {
             )
         }
     }
-
-
-    
 
     Ok(())
 }
