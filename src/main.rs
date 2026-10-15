@@ -1,24 +1,22 @@
-mod duplicates;
-mod hasher;
-mod models;
-mod scanner;
+// Modulo usato soltanto dall'applicazione CLI
 mod cli;
-mod report;
 
+// Import delle funzioni dalla libreria Dupply
+use dupply::scanner::scan_directory;
+use dupply::duplicates::find_duplicates;
+use dupply::report::calculate_stats;
+
+// Import per la CLI
 use clap::Parser;
 use cli::{Cli, Commands};
-use scanner::scan_directory;
-use std::path::Path;
-use crate::{
-    duplicates::find_duplicates,
-    report::calculate_stats,
-};
+
+
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
         match cli.command {
         Commands::Scan { path, min_size } => {
             println!("Scanning: {:?} ", path);
-            let mut files = scan_directory(Path::new(&path))?;
+            let mut files = scan_directory(&path)?;
             files.retain(|file| file.size >= min_size);
 
             let duplicates = find_duplicates(files)?;
