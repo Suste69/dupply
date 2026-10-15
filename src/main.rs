@@ -3,14 +3,16 @@ mod hasher;
 mod models;
 mod scanner;
 mod cli;
+mod report;
 
 use clap::Parser;
 use cli::{Cli, Commands};
 use scanner::scan_directory;
 use std::path::Path;
-
-use crate::duplicates::find_duplicates;
-
+use crate::{
+    duplicates::find_duplicates,
+    report::calculate_stats,
+};
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
         match cli.command {
@@ -36,6 +38,34 @@ fn main() -> anyhow::Result<()> {
                     println!("  {:?}", path);
                 }
             }
+            let mut files = scan_directory(&path)?;
+
+            let scanned = files.len();
+
+            files.retain(|file| file.size >= min_size);
+
+            let analyzed = files.len();
+
+            let duplicates = find_duplicates(files)?;
+
+            // Qui chiamerai calculate_stats()
+            let stats  = calculate_stats(scanned, analyzed, &duplicates);
+            let reclaimable_mb = stats.reclaimable_bytes as f64 / 1_048_576.0;
+            // e stamperai il report
+            println!(
+                "Dupply Scan Report
+                --------------------------
+                Files scanned:          {}
+                Files analyzed:         {}
+                Duplicate groups:       {}
+                Duplicate copies:       {}
+                Reclaimable space:  {:.2} MB",
+                stats.scanned,
+                stats.analyzed,
+                stats.duplicate_groups,
+                stats.duplicate_copies,
+                reclaimable_mb
+            )
         }
     }
 
