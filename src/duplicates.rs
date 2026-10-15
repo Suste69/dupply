@@ -9,7 +9,7 @@ use crate::models::FileInfo;
 pub fn group_by_size(files: Vec<FileInfo>) -> HashMap<u64, Vec<FileInfo>> {
     let mut groups: HashMap<u64, Vec<FileInfo>> = HashMap::new();
     for file in files {
-        groups.entry(file.size).or_insert_with(Vec::new).push(file);
+        groups.entry(file.size).or_default().push(file);
     }
     // remove all the group
     groups.retain(|_size, files| files.len() > 1);

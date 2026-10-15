@@ -18,14 +18,13 @@ pub fn calculate_stats(
         .iter()
         .map(|group| (group.files.len() as u64 - 1) * group.size)
         .sum();
-    let stats = ScanStats {
+    ScanStats {
         scanned,
         analyzed,
         duplicate_groups: (duplicates.len()),
         duplicate_copies: (copies),
         reclaimable_bytes: (bites),
-    };
-    stats
+    }
 }
 
 #[cfg(test)]
